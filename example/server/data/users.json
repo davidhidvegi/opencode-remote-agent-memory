@@ -1,0 +1,23 @@
+{
+  "users": [
+    {
+      "id": "david",
+      "name": "David Hidvegi",
+      "apiKey": "$2a$10$GWJpQIUQF.Xi/qvM61a9d.aDPGIJH52dcRx.vX9Dv3M6otYna2F7p",
+      "permissions": {
+        "global": "write",
+        "users": [
+          {
+            "ALL": "write"
+          }
+        ],
+        "projects": [
+          {
+            "ALL": "write"
+          }
+        ],
+        "domain": "write"
+      }
+    }
+  ]
+}

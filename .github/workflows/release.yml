@@ -22,23 +22,26 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+        working-directory: client
 
       - name: Typecheck
         run: bun run typecheck
+        working-directory: client
 
       - name: Build package
         run: bun pm pack
+        working-directory: client
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v4
         with:
-          subject-path: "./*.tgz"
+          subject-path: "client/*.tgz"
 
       - name: Upload release assets to GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.event.release.tag_name }} ./*.tgz
+          gh release upload ${{ github.event.release.tag_name }} client/*.tgz
 
       # npm still needed for trusted publishing, see:
       # https://github.com/oven-sh/bun/issues/15601
@@ -53,3 +56,4 @@ jobs:
 
       - name: Publish to npm
         run: npm publish
+        working-directory: client

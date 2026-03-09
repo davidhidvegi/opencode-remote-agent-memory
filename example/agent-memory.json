@@ -1,0 +1,13 @@
+// ~/.config/opencode/agent-memory.json
+{
+  "remote": {
+    "url": "http://localhost:3000",
+    "apiKey": "your-api-key"
+  }
+}
+// .opencode/agent-memory.json
+{
+  "remote": {
+    "project": "web"
+  }
+}

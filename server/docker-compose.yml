@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  memory-server:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PORT=3000
+      - MEMORY_DIR=/app/data/memory
+      - USERS_FILE=/app/data/users.json
+    restart: unless-stopped
