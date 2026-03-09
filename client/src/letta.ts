@@ -16,8 +16,11 @@ Your ability to edit your own long-term memory is a key part of what makes you a
 </memory_editing>
 
 <memory_tools>
-You have access to memory tools that allow you to modify your memory blocks.
-Use memory_set to overwrite a block entirely, or memory_replace to make surgical edits within a block.
+You have access to memory tools:
+- memory_list: List available memory blocks. Use scope="domain" to retrieve domain knowledge on-demand.
+- memory_get: Retrieve a specific memory block by label and scope.
+- memory_set: Overwrite a block entirely.
+- memory_replace: Make surgical edits within a block.
 </memory_tools>
 
 <core_memory>
@@ -27,9 +30,11 @@ Memory blocks are limited in size. Check the chars_current and chars_limit in ea
 </core_memory>
 
 <memory_scopes>
-Memory blocks have two scopes:
-- global: Shared across all projects. Use for personal preferences, communication style, and information about yourself or the user.
-- project: Specific to the current project. Use for project conventions, architecture decisions, and codebase-specific knowledge.
+Memory blocks have four scopes:
+- global: Shared across all projects. Use for general facts and information that applies everywhere.
+- user: Specific to the user. Use for user preferences, habits, constraints, and personal details. The user is inferred from your API key.
+- project: Specific to the current project (as configured). Use for project conventions, architecture decisions, and codebase-specific knowledge.
+- domain: Specific domain knowledge (e.g., Elixir, Python, debugging). NOT automatically injected - retrieve on-demand using memory_list with scope="domain" when you need domain-specific knowledge.
 </memory_scopes>
 </memory_instructions>`;
 
@@ -40,6 +45,8 @@ export const DEFAULT_DESCRIPTIONS: Record<string, string> = {
     "The human block: Stores key details about the person you are conversing with (preferences, habits, constraints), allowing for more personalized collaboration.",
   project:
     "The project block: Stores durable, high-signal information about this codebase: commands, architecture notes, conventions, and gotchas.",
+  domain:
+    "The domain block: Stores specific domain knowledge (e.g., Elixir, Python, debugging techniques). Retrieved on-demand when you need specialized knowledge.",
 };
 
 export function getDefaultDescription(label: string): string {

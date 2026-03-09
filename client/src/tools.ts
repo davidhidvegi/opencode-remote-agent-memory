@@ -1,28 +1,104 @@
 import { tool } from "@opencode-ai/plugin";
 
 import type { JournalStore } from "./journal";
-import type { MemoryScope, MemoryStore } from "./memory";
+import type { MemoryError, MemoryScope, MemoryStore } from "./memory";
+
+function toKebabCase(str: string): string {
+  return str
+    .toLowerCase()
+    .replace(/[\s_]+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function getErrorMessage(store: MemoryStore): string | null {
+  const error = store.getLastError?.();
+  if (!error) return null;
+
+  switch (error.code) {
+    case "CONNECTION_ERROR":
+      return `⚠️ Memory server unavailable. Cannot connect to server. Check that the server is running.`;
+    case "AUTH_ERROR":
+      return `⚠️ Memory authentication failed. Check your API key.`;
+    case "FORBIDDEN":
+      return `⚠️ Memory permission denied. ${error.message}`;
+    case "NOT_FOUND":
+      return `⚠️ Memory not found. ${error.message}`;
+    default:
+      return `⚠️ Memory error. ${error.message}`;
+  }
+}
 
 export function MemoryList(store: MemoryStore) {
   return tool({
-    description: "List available memory blocks (labels, descriptions, sizes).",
+    description: "List available memory blocks (labels, descriptions, sizes). Use scope='domain' to retrieve domain knowledge on-demand.",
     args: {
-      scope: tool.schema.enum(["all", "global", "project"]).optional(),
+      scope: tool.schema.enum(["all", "global", "user", "project", "domain"]).optional(),
     },
     async execute(args) {
-      // Default to "all" for list (show everything)
-      const scope = (args.scope ?? "all") as MemoryScope | "all";
+      const scope = (args.scope ?? "all") as MemoryScope | "all" | "domain";
       const blocks = await store.listBlocks(scope);
+      
+      const errorMsg = getErrorMessage(store);
       if (blocks.length === 0) {
+        if (errorMsg) {
+          return `${errorMsg}\n\nNo memory blocks available.`;
+        }
         return "No memory blocks found.";
       }
 
-      return blocks
+      const blockList = blocks
         .map(
           (b) =>
             `${b.scope}:${b.label}\n  read_only=${b.readOnly} chars=${b.value.length}/${b.limit}\n  ${b.description}`,
         )
         .join("\n\n");
+
+      if (errorMsg) {
+        return `${errorMsg}\n\n${blockList}`;
+      }
+      return blockList;
+    },
+  });
+}
+
+export function MemoryGet(store: MemoryStore) {
+  return tool({
+    description: "Get a specific memory block by label and scope.",
+    args: {
+      label: tool.schema.string(),
+      scope: tool.schema.enum(["global", "user", "project", "domain"]).optional(),
+    },
+    async execute(args) {
+      const scope = (args.scope ?? "project") as MemoryScope;
+      const label = scope === "user" ? toKebabCase(args.label) : args.label;
+      try {
+        const block = await store.getBlock(scope, label);
+        return `<${block.label}>
+<description>
+${block.description}
+</description>
+<metadata>
+- chars_current=${block.value.length}
+- chars_limit=${block.limit}
+- read_only=${block.readOnly}
+- scope=${block.scope}
+</metadata>
+<value>
+${block.value}
+</value>`;
+      } catch (err) {
+        const errorMsg = getErrorMessage(store);
+        if (errorMsg) {
+          return errorMsg;
+        }
+        const msg = err instanceof Error ? err.message : "Unknown error";
+        if (msg.includes("not found")) {
+          return `⚠️ Memory block '${args.label}' not found in scope '${scope}'.`;
+        }
+        return `⚠️ Failed to get memory block: ${msg}`;
+      }
     },
   });
 }
@@ -32,7 +108,7 @@ export function MemorySet(store: MemoryStore) {
     description: "Create or update a memory block (full overwrite).",
     args: {
       label: tool.schema.string(),
-      scope: tool.schema.enum(["global", "project"]).optional(),
+      scope: tool.schema.enum(["global", "user", "project", "domain"]).optional(),
       value: tool.schema.string(),
       description: tool.schema.string().optional(),
       limit: tool.schema.number().int().positive().optional(),
@@ -40,11 +116,21 @@ export function MemorySet(store: MemoryStore) {
     async execute(args) {
       // Default to "project" for mutations (safer default)
       const scope = (args.scope ?? "project") as MemoryScope;
-      await store.setBlock(scope, args.label, args.value, {
-        description: args.description,
-        limit: args.limit,
-      });
-      return `Updated memory block ${scope}:${args.label}.`;
+      const label = scope === "user" ? toKebabCase(args.label) : args.label;
+      try {
+        await store.setBlock(scope, label, args.value, {
+          description: args.description,
+          limit: args.limit,
+        });
+        return `Updated memory block ${scope}:${label}.`;
+      } catch (err) {
+        const errorMsg = getErrorMessage(store);
+        if (errorMsg) {
+          return errorMsg;
+        }
+        const msg = err instanceof Error ? err.message : "Unknown error";
+        return `⚠️ Failed to set memory block: ${msg}`;
+      }
     },
   });
 }
@@ -54,15 +140,25 @@ export function MemoryReplace(store: MemoryStore) {
     description: "Replace a substring within a memory block.",
     args: {
       label: tool.schema.string(),
-      scope: tool.schema.enum(["global", "project"]).optional(),
+      scope: tool.schema.enum(["global", "user", "project", "domain"]).optional(),
       oldText: tool.schema.string(),
       newText: tool.schema.string(),
     },
     async execute(args) {
       // Default to "project" for mutations (safer default)
       const scope = (args.scope ?? "project") as MemoryScope;
-      await store.replaceInBlock(scope, args.label, args.oldText, args.newText);
-      return `Updated memory block ${scope}:${args.label}.`;
+      const label = scope === "user" ? toKebabCase(args.label) : args.label;
+      try {
+        await store.replaceInBlock(scope, label, args.oldText, args.newText);
+        return `Updated memory block ${scope}:${label}.`;
+      } catch (err) {
+        const errorMsg = getErrorMessage(store);
+        if (errorMsg) {
+          return errorMsg;
+        }
+        const msg = err instanceof Error ? err.message : "Unknown error";
+        return `⚠️ Failed to replace in memory block: ${msg}`;
+      }
     },
   });
 }

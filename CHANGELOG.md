@@ -13,16 +13,10 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 ### Removed - for now removed features
 ### Fixed - for any bug fixes
 ### Security - in case of vulnerabilities
-[${version}]: https://github.com/joshuadavidthomas/opencode-agent-memory/releases/tag/v${version}
+[${version}]: https://github.com/davidhidvegi/opencode-remote-agent-memory/releases/tag/v${version}
 -->
 
 ## [Unreleased]
-
-## [0.2.0]
-
-### Added
-
-- Optional journal feature with semantic search, tagging, and tools for capturing insights and decisions across sessions
 
 ## [0.1.0]
 
@@ -39,8 +33,6 @@ and this project attempts to adhere to [Semantic Versioning](https://semver.org/
 
 ### New Contributors
 
-- Josh Thomas <josh@joshthomas.dev> (maintainer)
+- David Hidvegi <david@hidvegi.xyz> (maintainer)
 
-[unreleased]: https://github.com/joshuadavidthomas/opencode-agent-memory/compare/v0.2.0...HEAD
-[0.1.0]: https://github.com/joshuadavidthomas/opencode-agent-memory/releases/tag/v0.1.0
-[0.2.0]: https://github.com/joshuadavidthomas/opencode-agent-memory/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/davidhidvegi/opencode-remote-agent-memory/releases/tag/v0.1.0
