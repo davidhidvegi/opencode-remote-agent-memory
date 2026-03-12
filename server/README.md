@@ -10,7 +10,7 @@ bun install
 bun start
 ```
 
-Server runs on `http://localhost:3000`.
+Server runs on `http://localhost:3000` by default. Use `ADDRESS` env var to bind to a different IP.
 
 ## Adding Users
 
@@ -50,6 +50,7 @@ Restart the server after modifying permissions.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3000` | Server port |
+| `ADDRESS` | `localhost` | IP address to bind to (e.g., `0.0.0.0` for all interfaces) |
 
 ## Docker
 
