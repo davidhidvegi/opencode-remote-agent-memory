@@ -1,36 +1,38 @@
 import * as fs from "node:fs/promises";
 import type { Dirent } from "node:fs";
 import * as path from "node:path";
-import type { JournalEntry, JournalSearchQuery, JournalSearchResult } from "../types.js";
+import type {
+  JournalEntry,
+  JournalSearchQuery,
+  JournalSearchResult,
+} from "../types.js";
 import { parseFrontmatter, buildFrontmatter } from "./utils.js";
+import { pipeline } from "@huggingface/transformers";
 
 const MEMORY_DIR = process.env.MEMORY_DIR || "./data/memory";
 
 const MODEL_NAME = "Xenova/all-MiniLM-L6-v2";
 const MODEL_DTYPE = "q8";
 
-let pipelinePromise: Promise<any> | undefined;
-
-async function getPipeline() {
-  if (!pipelinePromise) {
-    pipelinePromise = (async () => {
-      const { pipeline } = await import("@huggingface/transformers");
-      return pipeline("feature-extraction", MODEL_NAME, { dtype: MODEL_DTYPE });
-    })();
-  }
-  return pipelinePromise;
+export async function loadModels() {
+  await generateEmbedding("test");
 }
 
 async function generateEmbedding(text: string): Promise<number[]> {
-  const pipe = await getPipeline();
+  const pipe = await pipeline("feature-extraction", MODEL_NAME, {
+    dtype: MODEL_DTYPE,
+  });
   const output = await pipe(text, { pooling: "mean", normalize: true });
   return Array.from(output.data as Float32Array);
 }
 
 function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length !== b.length) throw new Error(`Embedding dimension mismatch: ${a.length} vs ${b.length}`);
+  if (a.length !== b.length)
+    throw new Error(`Embedding dimension mismatch: ${a.length} vs ${b.length}`);
 
-  let dotProduct = 0, normA = 0, normB = 0;
+  let dotProduct = 0,
+    normA = 0,
+    normB = 0;
   for (let i = 0; i < a.length; i++) {
     dotProduct += a[i]! * b[i]!;
     normA += a[i]! ** 2;
@@ -65,7 +67,16 @@ function entryFilename(date: Date): string {
 
 export async function writeJournalEntry(
   userId: string,
-  entry: { title: string; body: string; project?: string; model?: string; provider?: string; agent?: string; sessionId?: string; tags?: string[] }
+  entry: {
+    title: string;
+    body: string;
+    project?: string;
+    model?: string;
+    provider?: string;
+    agent?: string;
+    sessionId?: string;
+    tags?: string[];
+  },
 ): Promise<JournalEntry> {
   const journalDir = getJournalDir(userId);
   await fs.mkdir(journalDir, { recursive: true });
@@ -84,25 +95,46 @@ export async function writeJournalEntry(
       agent: entry.agent,
       session_id: entry.sessionId,
       tags: entry.tags,
-    }).filter(([, v]) => v !== undefined)
+    }).filter(([, v]) => v !== undefined),
   );
 
-  await fs.writeFile(filePath, `${buildFrontmatter(frontmatter)}\n${entry.body}`, "utf-8");
+  await fs.writeFile(
+    filePath,
+    `${buildFrontmatter(frontmatter)}\n${entry.body}`,
+    "utf-8",
+  );
 
   const embedding = await generateEmbedding(`${entry.title}\n${entry.body}`);
-  await fs.writeFile(getEmbeddingFilePath(userId, id), JSON.stringify(embedding), "utf-8");
+  await fs.writeFile(
+    getEmbeddingFilePath(userId, id),
+    JSON.stringify(embedding),
+    "utf-8",
+  );
 
-  return { id, created: created.toISOString(), tags: entry.tags ?? [], ...entry, project: entry.project ?? "", model: entry.model ?? "", provider: entry.provider ?? "", agent: entry.agent ?? "", sessionId: entry.sessionId ?? "" };
+  return {
+    id,
+    created: created.toISOString(),
+    tags: entry.tags ?? [],
+    ...entry,
+    project: entry.project ?? "",
+    model: entry.model ?? "",
+    provider: entry.provider ?? "",
+    agent: entry.agent ?? "",
+    sessionId: entry.sessionId ?? "",
+  };
 }
 
-export async function getJournalEntry(userId: string, entryId: string): Promise<JournalEntry> {
+export async function getJournalEntry(
+  userId: string,
+  entryId: string,
+): Promise<JournalEntry> {
   const filePath = getEntryFilePath(userId, entryId);
   const content = await fs.readFile(filePath, "utf-8");
   const { frontmatter, body } = parseFrontmatter(content);
 
   return {
     id: entryId,
-    title: frontmatter.title as string || "",
+    title: (frontmatter.title as string) || "",
     body: body.trim(),
     project: (frontmatter.project as string) ?? "",
     model: (frontmatter.model as string) ?? "",
@@ -114,7 +146,10 @@ export async function getJournalEntry(userId: string, entryId: string): Promise<
   };
 }
 
-async function loadEmbedding(userId: string, entryId: string): Promise<number[] | undefined> {
+async function loadEmbedding(
+  userId: string,
+  entryId: string,
+): Promise<number[] | undefined> {
   const embeddingPath = getEmbeddingFilePath(userId, entryId);
   try {
     const raw = await fs.readFile(embeddingPath, "utf-8");
@@ -126,7 +161,7 @@ async function loadEmbedding(userId: string, entryId: string): Promise<number[] 
 
 export async function searchJournalEntries(
   userId: string,
-  query: JournalSearchQuery
+  query: JournalSearchQuery,
 ): Promise<JournalSearchResult> {
   const journalDir = getJournalDir(userId);
   const limit = Math.min(Math.max(query.limit ?? 20, 1), 50);
@@ -172,7 +207,7 @@ export async function searchJournalEntries(
     if (query.tags && query.tags.length > 0) {
       const entryTagNames = entry.tags.map((t) => t.toLowerCase());
       const allTagsMatch = query.tags.every((t) =>
-        entryTagNames.includes(t.toLowerCase())
+        entryTagNames.includes(t.toLowerCase()),
       );
       if (!allTagsMatch) continue;
     }

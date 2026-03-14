@@ -25,23 +25,28 @@ Append-only entries with semantic search. Tag entries for easy retrieval. Useful
 ## Quick Start
 
 ```bash
-# 1. Start the server
-cd server && bun install && bun start
+# 1. Add a user
+cd server && bunx tsx src/add-user.ts "myuser" "My User" "myapikey"
 
-# 2. Add a user (in another terminal)
-cd server && bunx tsx src/add-user.ts myuser "My User" "myapikey"
+# 2. Start the server
+cd server && bun install && bun start
 
 # 3. Configure the client
 echo '{
   "remote": {
-    "url": "http://localhost:3000/api",
+    "url": "http://localhost:3000/",
     "apiKey": "myapikey",
     "project": "my-project"
   }
 }' > .opencode/agent-memory.json
+```
 
-# 4. Configure OpenCode
-echo '{"plugin": ["opencode-remote-agent-memory"]}' > ~/.config/opencode/opencode.json
+Then add the plugin to `~/.config/opencode/opencode.json`:
+
+```json
+{
+  "plugin": ["opencode-remote-agent-memory"]
+}
 ```
 
 Restart OpenCode and ask the agent to manage your memory.

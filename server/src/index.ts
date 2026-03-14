@@ -1,9 +1,12 @@
 import { serve } from "@hono/node-server";
 import { getPort } from "hono/node";
 import app from "./router.js";
+import { loadModels } from "./storage/journal.ts";
 
 const port = parseInt(process.env.PORT || "3000");
 const address = process.env.ADDRESS || "localhost";
+
+await loadModels();
 
 console.log(`Memory server starting on port ${port}...`);
 
