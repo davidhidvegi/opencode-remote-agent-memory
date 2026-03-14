@@ -69,6 +69,6 @@ Restart OpenCode.
 git clone https://github.com/davidhidvegi/opencode-remote-agent-memory.git
 
 # Link the client to OpenCode
-mkdir -p ~/.config/opencode/plugin
-ln -sf "$(pwd)/client/src/plugin.ts" ~/.config/opencode/plugin/memory.ts
+mkdir -p ~/.config/opencode/plugins
+ln -sf "$(pwd)/client/src/plugin.ts" ~/.config/opencode/plugins/memory.ts
 ```

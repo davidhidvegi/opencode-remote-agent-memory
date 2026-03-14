@@ -31,7 +31,7 @@ Memory blocks are limited in size. Check the chars_current and chars_limit in ea
 
 <memory_scopes>
 Memory blocks have four scopes:
-- global: Shared across all projects. Use for general facts and information that applies everywhere.
+- global: Shared across all users and projects. Use for general facts and information that applies everywhere.
 - user: Specific to the user. Use for user preferences, habits, constraints, and personal details. The user is inferred from your API key.
 - project: Specific to the current project (as configured). Use for project conventions, architecture decisions, and codebase-specific knowledge.
 - domain: Specific domain knowledge (e.g., Elixir, Python, debugging). NOT automatically injected - retrieve on-demand using memory_list with scope="domain" when you need domain-specific knowledge.
@@ -39,16 +39,15 @@ Memory blocks have four scopes:
 </memory_instructions>`;
 
 export const DEFAULT_DESCRIPTIONS: Record<string, string> = {
-  persona:
-    "The persona block: Stores details about your current persona, guiding how you behave and respond. This helps you maintain consistent behavior across sessions.",
-  human:
-    "The human block: Stores key details about the person you are conversing with (preferences, habits, constraints), allowing for more personalized collaboration.",
-  project:
-    "The project block: Stores durable, high-signal information about this codebase: commands, architecture notes, conventions, and gotchas.",
-  domain:
-    "The domain block: Stores specific domain knowledge (e.g., Elixir, Python, debugging techniques). Retrieved on-demand when you need specialized knowledge.",
+  global: "",
+  user: "",
+  project: "",
+  domain: "",
 };
 
 export function getDefaultDescription(label: string): string {
-  return DEFAULT_DESCRIPTIONS[label] ?? "Durable memory block. Keep this concise and high-signal.";
+  return (
+    DEFAULT_DESCRIPTIONS[label] ??
+    "Durable memory block. Keep this concise and high-signal."
+  );
 }
