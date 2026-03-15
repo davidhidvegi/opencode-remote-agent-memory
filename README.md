@@ -55,6 +55,7 @@ Restart OpenCode and ask the agent to manage your memory.
 
 - **[Server README](server/README.md)** - Docker deployment, environment variables, API reference
 - **[Client README](client/README.md)** - Configuration options, available tools, local development
+- **[Commands README](client/COMMANDS.md)** - Example commands to instruct agent to write memory or journal
 
 ## Features
 

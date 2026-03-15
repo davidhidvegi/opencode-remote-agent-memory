@@ -14,7 +14,7 @@ const MEMORY_DIR = process.env.MEMORY_DIR || "./data/memory";
 const MODEL_NAME = "Xenova/all-MiniLM-L6-v2";
 const MODEL_DTYPE = "q8";
 
-export async function loadModels() {
+export async function initializeModels() {
   await generateEmbedding("test");
 }
 

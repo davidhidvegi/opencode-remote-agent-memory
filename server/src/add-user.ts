@@ -29,39 +29,7 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-async function prompt(question: string): Promise<string> {
-  const readline = await import("node:readline/promises");
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-  const answer = await rl.question(question);
-  rl.close();
-  return answer.trim();
-}
-
-async function main() {
-  let id: string, name: string, apiKey: string;
-
-  if (process.argv.includes("--help") || process.argv.includes("-h")) {
-    console.log("Usage: bun run src/add-user.ts <id> <name> <apiKey>");
-    console.log("Or run without arguments for interactive mode:");
-    console.log("Usage: bun run src/add-user.ts");
-    process.exit(0);
-  } else if (process.argv.length >= 5) {
-    id = process.argv[2];
-    name = process.argv[3];
-    apiKey = process.argv[4];
-  } else {
-    console.log("Interactive mode - press Ctrl+C to cancel\n");
-    id = await prompt("User ID: ");
-    name = await prompt("User Name: ");
-    apiKey = await prompt("API Key (plaintext): ");
-  }
-
-  if (!id || !name || !apiKey) {
-    console.error("Error: id, name, and apiKey are required");
-    process.exit(1);
-  }
-
-  console.log("\nHashing API key...");
+export async function createUser(id: string, name: string, apiKey: string): Promise<void> {
   const hashedKey = await bcrypt.hash(apiKey, 10);
 
   const dir = path.dirname(USERS_FILE);
@@ -103,6 +71,42 @@ async function main() {
 
   console.log(`\nUser "${name}" (${id}) created successfully!`);
   console.log("\n⚠️  IMPORTANT: Set permissions in the users.json file before the user can access any memories.");
+}
+
+async function prompt(question: string): Promise<string> {
+  const readline = await import("node:readline/promises");
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  const answer = await rl.question(question);
+  rl.close();
+  return answer.trim();
+}
+
+async function main() {
+  let id: string, name: string, apiKey: string;
+
+  if (process.argv.includes("--help") || process.argv.includes("-h")) {
+    console.log("Usage: bun run src/add-user.ts <id> <name> <apiKey>");
+    console.log("Or run without arguments for interactive mode:");
+    console.log("Usage: bun run src/add-user.ts");
+    process.exit(0);
+  } else if (process.argv.length >= 5) {
+    id = process.argv[2];
+    name = process.argv[3];
+    apiKey = process.argv[4];
+  } else {
+    console.log("Interactive mode - press Ctrl+C to cancel\n");
+    id = await prompt("User ID: ");
+    name = await prompt("User Name: ");
+    apiKey = await prompt("API Key (plaintext): ");
+  }
+
+  if (!id || !name || !apiKey) {
+    console.error("Error: id, name, and apiKey are required");
+    process.exit(1);
+  }
+
+  console.log("\nHashing API key...");
+  await createUser(id, name, apiKey);
 }
 
 main().catch(console.error);
