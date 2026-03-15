@@ -8,6 +8,10 @@
     "type": "git",
     "url": "git+https://github.com/davidhidvegi/opencode-remote-agent-memory.git"
   },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "main": "src/plugin.ts",
   "type": "module",
   "files": [
