@@ -16,13 +16,13 @@ Server runs on `http://localhost:3000` by default. Use `ADDRESS` env var to bind
 
 ```bash
 # Interactive mode
-bunx tsx src/add-user.ts
+bun run src/add-user.ts
 
 # With arguments
-bunx tsx src/add-user.ts <id> <name> <apiKey>
+bun run src/add-user.ts <id> <name> <apiKey>
 
 # Example
-bunx tsx src/add-user.ts john "John Doe" "secret-api-key-123"
+bun run src/add-user.ts john "John Doe" "secret-api-key-123"
 ```
 
 After creating a user, edit `data/users.json` to set permissions:
