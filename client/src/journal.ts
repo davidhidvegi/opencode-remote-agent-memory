@@ -139,29 +139,29 @@ export function buildJournalSystemNote(tags?: readonly JournalTag[]): string {
       : "";
 
   return `<journal_instructions>
-  <journal_purpose>
-  You have access to a private, append-only journal for experiential learning and self-improvement.
-  Unlike memory blocks (which are concise, domain-specific references that are updated), the journal is a persistent history of your actions, reasoning, and discoveries. It allows you to learn from past mistakes and successes across sessions.
-  </journal_purpose>
-  <journal_content>
-  Record entries to persist insights that might be useful in the future. The journal is append-only; do not delete or overwrite previous entries.
-  Good candidates for journal entries include:
-  - Solutions: Specific steps or reasoning that successfully solved a complex problem.
-  - Failures: Approaches that did not work or errors encountered, helping you avoid repeating mistakes.
-  - Learnings: Key decisions, architectural insights, or "aha!" moments that clarified a confusing concept.
-  - Context: Notes on user preferences, project constraints, or general observations discovered through interaction.
-  </journal_content>
-  <journal_tags>
-  Tags are free-form strings used to classify entries for easier retrieval. Use them to organize your journal effectively.${tagSection}
-  </journal_tags>
-  <journal_workflow>
-  - Before starting complex tasks: Use `journal_search` to find relevant past entries semantically.
-  - Retrieval Strategy:
-    1. Read the single most relevant entry first.
-    2. If it is not helpful, stop reading and proceed with your current context.
-    3. If it IS helpful (offering a solution, a shortcut, or a warning of a failed approach), read 1-2 additional relevant entries to build a broader context.
-  - Goal: Leverage past experience to solve issues faster or learn how NOT to approach a problem.
-  The journal is global across all projects, but each entry automatically records the project context from which it was written.
-  </journal_workflow>
-  </journal_instructions>`;
+<journal_purpose>
+You have access to a private, append-only journal for experiential learning and self-improvement.
+Unlike memory blocks (which are concise, domain-specific references that are updated), the journal is a persistent history of your actions, reasoning, and discoveries. It allows you to learn from past mistakes and successes across sessions.
+</journal_purpose>
+<journal_content>
+Record entries to persist insights that might be useful in the future. The journal is append-only; do not delete or overwrite previous entries.
+Good candidates for journal entries include:
+- Solutions: Specific steps or reasoning that successfully solved a complex problem.
+- Failures: Approaches that did not work or errors encountered, helping you avoid repeating mistakes.
+- Learnings: Key decisions, architectural insights, or "aha!" moments that clarified a confusing concept.
+- Context: Notes on user preferences, project constraints, or general observations discovered through interaction.
+</journal_content>
+<journal_tags>
+Tags are free-form strings used to classify entries for easier retrieval. Use them to organize your journal effectively.${tagSection}
+</journal_tags>
+<journal_workflow>
+- Before starting complex tasks: Use journal_search to find relevant past entries semantically.
+- Retrieval Strategy:
+  1. Read the single most relevant entry first.
+  2. If it is not helpful, stop reading and proceed with your current context.
+  3. If it IS helpful (offering a solution, a shortcut, or a warning of a failed approach), read 1-2 additional relevant entries to build a broader context.
+- Goal: Leverage past experience to solve issues faster or learn how NOT to approach a problem.
+The journal is global across all projects, but each entry automatically records the project context from which it was written.
+</journal_workflow>
+</journal_instructions>`;
 }
