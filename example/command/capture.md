@@ -2,13 +2,20 @@
 description: Capture session knowledge to memory
 ---
 
-Identify and save important knowledge from this session to memory using memory_set or memory_replace.
+Analyze the current session to identify and retain new knowledge. Cross-reference findings with your existing memory blocks and perform necessary updates to ensure your long-term memory remains accurate and up-to-date.
 
-Use appropriate memory scopes:
-- project:decisions - for architectural decisions made
-- project:state - for project state changes
-- user:lessons - for lessons learned during this session
-- user:bio - for updates to agent identity
-- global:persona - for persona changes
+Action Guidelines:
+1. Update Existing Blocks: If a topic or fact has changed or been clarified, use `memory_replace` to update the relevant block.
+2. Create New Blocks: If a significant new concept, pattern, or preference has emerged, use `memory_set` to create a new block with an appropriate scope.
+3. Synthesis: Do not simply append text. Consolidate knowledge to keep blocks concise, high-signal, and easy to read.
 
-Keep each block concise and high-signal.
+Scope Guidance:
+- Global: General heuristics or facts applicable everywhere.
+- User: Personal preferences, constraints, and communication style.
+- Project: Architectural decisions, tech stack details, and codebase context.
+- Domain: Specialized technical knowledge or tool usage reusable across projects (e.g., "Docker volume mounting syntax," "Elixir debugging patterns"). Create domain blocks when you discover non-project-specific insights that would be useful in future sessions involving this technology.
+
+Ensure your memory blocks reflect the current state of understanding before ending the session.
+
+Result Reporting:
+Once all memory updates are complete, provide a short summary listing the blocks you created or updated and the key knowledge persisted.
