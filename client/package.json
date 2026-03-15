@@ -1,6 +1,6 @@
 {
   "name": "opencode-remote-agent-memory",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Letta-style editable remote memory blocks for OpenCode.",
   "author": "David Hidvegi <david@hidvegi.xyz>",
   "license": "MIT",
